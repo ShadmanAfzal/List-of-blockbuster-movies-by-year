@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import logging
 import pandas as pd
+import sys
 from datetime import datetime
 
 def collect_collections(date):
@@ -35,6 +36,12 @@ def collect_collections(date):
         print(f"Error occured while fetching data from https://www.boxofficemojo.com/year/world/{date}/")
 
 if __name__ == '__main__':
-    date = input("Enter Year: ")
-    print("Initializing...")
-    collect_collections(date)
+    if len(sys.argv) == 2:
+        date = sys.argv[1]
+    else:
+        date = input("Enter Year: ")
+    if not date.isalpha():
+        print("Initializing...")
+        collect_collections(date)
+    else:
+        print("Argument must be a Integer !")
