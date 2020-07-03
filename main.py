@@ -1,16 +1,21 @@
 from bs4 import BeautifulSoup
 import requests
+import logging
 import pandas as pd
+from datetime import datetime
 
 def collect_collections(date):
     movies = []
     collection = []
     rows = []
     body = requests.get(f"https://www.boxofficemojo.com/year/world/{date}/")
+    LOG_FILENAME = datetime.now().strftime('log/logfile_%H_%M_%S_%d_%m_%Y.log')
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
     if body.status_code == 200:
         soup = BeautifulSoup(body.content, 'html.parser')
         table = soup.find_all('table')
-
         for i in table[0].find_all('tr'):
             if i.find('td', class_='mojo-field-type-money') is not None:
                 collection.append(i.find('td', class_='mojo-field-type-money').decode_contents())
@@ -22,9 +27,11 @@ def collect_collections(date):
 
         fields = ['Movies', 'Worldwide Collections']
         collections = pd.DataFrame(rows, columns=fields)
-        collections.to_csv(f"list_movies_with_collections_{date}.csv")
+        collections.to_csv(f"Records/list_movies_with_collections_{date}.csv")
+        logging.info(f"Records has been saved in list_movies_with_collections_{date}.csv file")
         print(f"Done...\nRecords has been saved in list_movies_with_collections_{date}.csv file")
     else:
+        logging.error(f"Error occured while fetching data from https://www.boxofficemojo.com/year/world/{date}/")
         print(f"Error occured while fetching data from https://www.boxofficemojo.com/year/world/{date}/")
 
 if __name__ == '__main__':
