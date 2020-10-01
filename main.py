@@ -1,9 +1,11 @@
-from bs4 import BeautifulSoup
-import requests
 import logging
-import pandas as pd
 import sys
 from datetime import datetime
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
 
 def collect_collections(date):
     movies = []
@@ -25,15 +27,20 @@ def collect_collections(date):
                     movies.append(k.get_text())
         for i in zip(movies, collection):
             rows.append(list(i))
-
-        fields = ['Movies', 'Worldwide Collections']
-        collections = pd.DataFrame(rows, columns=fields)
-        collections.to_csv(f"Records/list_movies_with_collections_{date}.csv")
+        dataframe_and_csv(rows)
         logging.info(f"Records has been saved in list_movies_with_collections_{date}.csv file")
         print(f"Done...\nRecords has been saved in list_movies_with_collections_{date}.csv file")
     else:
         logging.error(f"Error occured while fetching data from https://www.boxofficemojo.com/year/world/{date}/")
         print(f"Error occured while fetching data from https://www.boxofficemojo.com/year/world/{date}/")
+
+
+def dataframe_and_csv(rows):
+    fields = ['Movies', 'Worldwide Collections']
+    collections = pd.DataFrame(rows, columns=fields)
+    df = pd.DataFrame(collections)
+    df.to_csv(f"Records/list_movies_with_collections_{date}.csv", index=False)
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
