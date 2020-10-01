@@ -16,7 +16,7 @@ def collect_collections(date):
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
-    if body.status_code == 200:
+    if body.status_code == requests.codes.ok:
         soup = BeautifulSoup(body.content, 'html.parser')
         table = soup.find_all('table')
         for i in table[0].find_all('tr'):
